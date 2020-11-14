@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt 
 import re
+import goal_database
 
 class GoalTracker:
     """Class to show current progress for goals"""
@@ -9,53 +10,40 @@ class GoalTracker:
     
     def set_goal(self, goal_name):
         #set a new goal to be tracked
-        if self.check_goal_exists(goal_name) == False:
-            with open(self.doc, "a+") as goal_doc:
-                goal_doc.write(f"{goal_name}: 0\n")
+        if goal_database.check_goal_exists:
+            print("Goal already exists!")
         else:
-            print("You already have this goal!")
+            goal_database.update_goals_data(goal_name, 0)
+            print(f"Goal {goal_name} Set!")
 
     def update_goal_progress(self, goal_name, progress):
         #update an existing goal, only progress to be altered
-        if self.check_goal_exists(goal_name):
-            with open(self.doc, "r") as txt:
-                lines = txt.readlines()
-                with open(self.doc, "w+") as txt:
-                    for goal in lines:
-                        if goal_name not in goal:
-                            txt.write(goal)
-                    txt.write(f"{goal_name}: {progress}\n")
+        if goal_database.check_goal_exists(goal_name):
+            goal_database.update_goals_data(goal_name, progress)
         else:
-            print("No such Goal Exists!")
+            print("No such goal exists")
 
-    def check_goal_exists(self, goal_name):
-        #check if a goal exists already
-        with open(self.doc, "r") as txt:
-            lines = txt.readlines()
-            test_for_goal = ' '.join([line for line in lines])
-            if re.findall("%s" % goal_name, test_for_goal):
-                return True
-            else:
-                return False
 
     def see_progress(self, goal):
         present = False
-        with open(self.doc) as goal_doc:
-            for line in goal_doc:
-                goal_name = line.split(":")
-                if goal == goal_name[0]:
-                    present = True
-                    completed = int(goal_name[1])
-                    if completed > 0:
-                        labels = "Progression", "Remaining"
-                    else:
-                        labels = "Remaining", ""
-                    sizes = [completed, (100 - completed)]
-                    title = goal_name[0]
-                    pie = self.create_pie_chart(labels, sizes, title)
-                    plt.show() 
-            if present == False:
-                print("No such Goal, please try again")
+        #make sure that the goal exists.
+        if goal_database.check_goal_exists(goal):
+            present = True
+            #get the goal information from the database
+            cur_goal = goal_database.get_goal_data(goal)
+            completed = cur_goal[1]
+            goal_name = cur_goal[0]
+            #start prepping data for graphing
+            if completed > 0:
+                labels = "Progression", "Remaining"
+            else:
+                labels = "Remaining", ""
+            sizes = [completed, (100 - completed)]
+            title = goal_name
+            pie = self.create_pie_chart(labels, sizes, title)
+            plt.show() 
+        if present == False:
+            print("No such Goal, please try again")
 
     def create_pie_chart(self, labels, sizes, title):
         fig1, ax = plt.subplots()
@@ -65,9 +53,7 @@ class GoalTracker:
         return ax
 
 ben = GoalTracker()
-str = "Upload GitHub Repository"
-ben.see_progress(str)
-ben.set_goal(str)
-ben.see_progress(str)
-ben.update_goal_progress("Upload GitHub Repository", 35)
-ben.see_progress(str)
+ben.set_goal("Keep On Going")
+ben.see_progress("Keep on going")
+ben.update_goal_progress("Keep on going", 55)
+ben.see_progress("Keep on going")
