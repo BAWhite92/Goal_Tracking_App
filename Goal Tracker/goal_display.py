@@ -1,25 +1,40 @@
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import re
 import goal_database
 
 class GoalTracker:
     """Class to show current progress for goals"""
 
-    def __init__ (self):
-        self.doc = "user_goals.txt"
-    
+    def __init__ (self, user):
+        self.username = user
+
+
     def set_goal(self, goal_name):
         #set a new goal to be tracked
-        if goal_database.check_goal_exists:
+        if goal_database.check_goal_exists(goal_name):
             print("Goal already exists!")
         else:
             goal_database.update_goals_data(goal_name, 0)
             print(f"Goal {goal_name} Set!")
 
+    def create_sub_goal(self, sgoal, goal)
+        #create a sub goal that contributes to an existing goal
+
+
     def update_goal_progress(self, goal_name, progress):
         #update an existing goal, only progress to be altered
         if goal_database.check_goal_exists(goal_name):
             goal_database.update_goals_data(goal_name, progress)
+        else:
+            print("No such goal exists")
+
+    def update_sub_goal(self, sgoal, progress, goal)
+        #update an existing subgoal
+        
+
+    def remove_goal(self, goal):
+        if goal_database.delete_goal(goal):
+            print(f"{goal} successfully deleted")
         else:
             print("No such goal exists")
 
@@ -41,7 +56,7 @@ class GoalTracker:
             sizes = [completed, (100 - completed)]
             title = goal_name
             pie = self.create_pie_chart(labels, sizes, title)
-            plt.show() 
+            plt.show()
         if present == False:
             print("No such Goal, please try again")
 
@@ -51,6 +66,8 @@ class GoalTracker:
         ax.axis("Equal")
         ax.set_title(title, fontsize = 24)
         return ax
+
+
 
 ben = GoalTracker()
 ben.set_goal("Keep On Going")
